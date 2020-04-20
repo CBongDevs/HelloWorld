@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  user-select: none;
 }
 
 .App-logo {
@@ -24,15 +25,24 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+#status {
+  animation: status-fadein 0.2s;
+}
+
+@keyframes status-fadein {
+  from { 
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
