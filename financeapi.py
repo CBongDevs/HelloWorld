@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from datetime import datetime
 import os
 
-app = Flask(__name__, static_folder='./finance-web/build', static_url_path='/')
+app = Flask(__name__, static_folder='./build', static_url_path='/')
 
 @app.route('/api/ping')
 def current_time():
