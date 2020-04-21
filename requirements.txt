@@ -1,3 +1,11 @@
 flask
 gunicorn
 ipython
+flask_sqlalchemy
+sqlalchemy
+autopep8
+psycopg2
+python-dotenv
+flask-migrate
+flask-script
+alembic
