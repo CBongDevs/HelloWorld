@@ -33,6 +33,7 @@ If you see the below output, all is well and you are able to interact with the d
 - To change database, type `\c <database>`. 
 - SQL statements must be terminated using a semicolon.
 - To quit, type `\q`.
+- Sometimes, the table name must be surrounded with quotes, e.g. `drop table "user"`.
 
 ## Initialisation
 
@@ -40,12 +41,20 @@ First, create a new database:
 
     % createdb financeapi
 
-Then, start a python session (remember to use the virtualenv environment!):
+Then, upgrade your database to the latest schema:
 
-    (.venv) % ipython
+    % python manage.py db upgrade
 
-Finally, use `flask_sqlalchemy` to initialise it with our tables:
+## Migrations
 
-    In [1]: from financeapi import db
-    In [2]: db.create_all()
+In general:
+1. `python manage.py db init` is ran once to initialise the migrations directory on project creation.
+2. You create a new class in the models directory.
+3. `python manage.py db migrate` to create a migration script.
+4. `python manage.py db upgrade` to upgrade the postgres database.
 
+To migrate the production postgres database, execute:
+
+    heroku run python manage.py db upgrade
+
+Make sure to commit the migration scripts created in step 3.
