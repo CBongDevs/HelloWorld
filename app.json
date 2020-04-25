@@ -12,7 +12,8 @@
     "environments": {
         "test": {
             "scripts": {
-                "test": "python -m unittest"
+                "test": "python -m unittest",
+                "lint": "pylint *.py models"
             }
         }
     }
