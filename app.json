@@ -1,5 +1,6 @@
 {
     "name": "Hello World App",
+    "description": "Demonstrates how to setup a webserver stack",
     "buildpacks": [
         {
             "url": "heroku/nodejs"
