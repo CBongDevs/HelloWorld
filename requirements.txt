@@ -10,3 +10,4 @@ flask-migrate
 flask-script
 alembic
 pylint
+flask_restful
