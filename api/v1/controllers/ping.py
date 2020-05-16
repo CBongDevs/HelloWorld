@@ -14,6 +14,7 @@ from flask import Blueprint
 
 controller = Blueprint('ping', __name__)
 
+
 @controller.route('/ping')
 def ping():
     return f"""

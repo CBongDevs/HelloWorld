@@ -11,6 +11,7 @@ if not dotenv_path.exists():
 
 load_dotenv(dotenv_path)
 
+
 class Config:
     """Stores Flask configuration variables loaded from .env"""
 

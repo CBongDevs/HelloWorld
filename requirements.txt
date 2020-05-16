@@ -11,3 +11,5 @@ flask-script
 alembic
 pylint
 flask_restful
+pytest
+yapf
