@@ -1,3 +1,4 @@
+from os import getenv
 from datetime import datetime
 from flask import Flask
 from flask_restful import Resource
@@ -11,5 +12,6 @@ class Ping(Resource):
             'time': str(datetime.now()),
             'db' : {
                 'revision' : revision
-            }
+            },
+            'database_url': getenv('DATABASE_URL')
         }
