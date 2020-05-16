@@ -14,7 +14,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   async buttonClick() {
-    let request = await fetch('/api/ping');
+    let request = await fetch('/api/v2/ping');
     let json = await request.json();
     this.setState({
       'status': json['time']
