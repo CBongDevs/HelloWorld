@@ -61,7 +61,7 @@ command.
 
 Next, install the dependencies:
 
-    (.venv) $ pip install -r api/requirements.txt
+    (.venv) $ pip install -r requirements.txt
 
 Api can be ran in development mode by executing:
 
