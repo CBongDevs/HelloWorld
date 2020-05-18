@@ -47,4 +47,28 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: dist
-        path: ./web/dist
+        path: ./web/build
+  merge-results:
+    needs:
+      - build-api
+      - build-web
+    name: Merge Results
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Download dist
+      uses: actions/download-artifact@v1
+      with:
+        name: dist
+    - name: Merge and Zip
+      run: |
+        mv ./dist ./web/build
+        cd ..
+        touch artifact.tgz
+        tar czfv artifact.tgz --exclude=artifact.tgz .
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: artifact.tgz
+        path: artifact.tgz
