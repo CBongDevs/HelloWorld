@@ -64,10 +64,8 @@ jobs:
     - name: Merge and Zip
       run: |
         mv ./dist ./web/build
-        cd ..
         touch artifact.tgz
         tar czfv artifact.tgz --exclude=artifact.tgz --exclude=.git .
-        ls
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
