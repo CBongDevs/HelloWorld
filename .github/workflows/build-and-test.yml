@@ -72,6 +72,8 @@ jobs:
         name: artifact.tgz
         path: artifact.tgz
   draft-release:
+    needs:
+      - merge-results
     name: Draft Release
     runs-on: ubuntu-latest
     steps:
