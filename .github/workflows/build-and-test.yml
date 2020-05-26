@@ -77,8 +77,10 @@ jobs:
     name: Draft Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: artifact.tgz
       - name: Draft Release
         id: draft_release
         uses: actions/create-release@v1
@@ -91,8 +93,8 @@ jobs:
             An example release
           draft: true
           prerelease: false
-      - name: Upload Artifacts
-        id: upload_artifacts
+      - name: Upload Release Assets
+        id: upload_assets
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
