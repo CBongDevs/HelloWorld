@@ -7,7 +7,19 @@ on:
     branches: [ master, develop ]
 
 jobs:
+  version-bump:
+    name: Version Bump
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Current Version
+        id: version
+        run: echo "::set-output name=version::0.0.0-dev.${{ github.run_number }}+${{ github.sha::7 }}"
   build-api:
+    needs:
+      - version-bump
     name: Build and Test Api
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +43,8 @@ jobs:
       run: |
         pytest
   build-web:
+    needs:
+      - version-bump
     name: Build Web
     runs-on: ubuntu-latest
     steps:
@@ -46,10 +60,11 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: dist
+        name: ${{ needs.version-bump.outputs.version }}_dist
         path: ./web/build
   merge-results:
     needs:
+      - version-bump
       - build-api
       - build-web
     name: Merge Results
@@ -60,7 +75,7 @@ jobs:
     - name: Download dist
       uses: actions/download-artifact@v1
       with:
-        name: dist
+        name: ${{ needs.version-bump.outputs.version }}_dist
     - name: Merge and Zip
       run: |
         mv ./dist ./web/build
@@ -69,38 +84,38 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
-        name: artifact.tgz
+        name: ${{ needs.version-bump.outputs.version }}.tgz
         path: artifact.tgz
-  draft-release:
-    needs:
-      - merge-results
-    name: Draft Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: artifact.tgz
-          path: ./
-      - name: Draft Release
-        id: draft_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            An example release
-          draft: true
-          prerelease: false
-      - name: Upload Release Assets
-        id: upload_assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: artifact.tgz
-          asset_name: ${{ github.ref }}
-          asset_content_type: application/gzip
+#  draft-release:
+#    needs:
+#      - merge-results
+#    name: Draft Release
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download Artifact
+#        uses: actions/download-artifact@v1
+#        with:
+#          name: artifact.tgz
+#          path: ./
+#      - name: Draft Release
+#        id: draft_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ github.ref }}
+#          body: |
+#            An example release
+#          draft: true
+#          prerelease: false
+#      - name: Upload Release Assets
+#        id: upload_assets
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+#          asset_path: artifact.tgz
+#          asset_name: ${{ github.ref }}
+#          asset_content_type: application/gzip
