@@ -1,7 +1,16 @@
 {
-  "major": 0,
-  "minor": 0,
-  "path": 0,
-  "release": "",
-  "build": ""
+  "releaseVersion": {
+    "major": 0,
+    "minor": 0,
+    "patch": 0,
+    "release": "",
+    "build": ""
+  },
+  "currentVersion": {
+    "major": 0,
+    "minor": 0,
+    "patch": 0,
+    "release": "",
+    "build": ""
+  }
 }
