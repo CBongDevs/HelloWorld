@@ -17,7 +17,8 @@ jobs:
       - name: Get Current Version
         id: version
         run: |
-          shortSHA=${{ github.sha }}::7
+          sha=${{ github.sha }}
+          shortSHA=${sha::7}
           echo "::set-output name=version::0.0.0-dev.${{ github.run_number }}+$shortSHA"
   build-api:
     needs:
