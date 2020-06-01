@@ -16,7 +16,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Get Current Version
         id: version
-        run: echo "::set-output name=version::0.0.0-dev.${{ github.run_number }}+${{ github.sha::7 }}"
+        run: |
+          shortSHA=${{ github.sha }}::7
+          echo "::set-output name=version::0.0.0-dev.${{ github.run_number }}+$shortSHA"
   build-api:
     needs:
       - version-bump
