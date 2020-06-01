@@ -19,7 +19,7 @@ jobs:
         run: |
           sha=${{ github.sha }}
           shortSHA=${sha::7}
-          echo "::set-output name=version::0.0.0-dev.${{ github.run_number }}+$shortSHA"
+          echo "::set-output name=version::0.0.0-dev.$shortSHA+${{ github.run_id }}"
   build-api:
     needs:
       - version-bump
