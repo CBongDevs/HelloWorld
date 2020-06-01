@@ -79,6 +79,7 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: ${{ needs.version-bump.outputs.version }}_dist
+        path: ./dist
     - name: Merge and Zip
       run: |
         mv ./dist ./web/build
