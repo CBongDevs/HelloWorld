@@ -1,0 +1,16 @@
+name: Test Actions for Discord Notifications
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    steps:
+    - uses: Ilshidur/action-discord@0.0.2
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: 'The release [{{ EVENT_PAYLOAD.release.tag_name }}]({{ EVENT_PAYLOAD.release.url }}) of project {{ EVENT_PAYLOAD.repository.full_name }} has been released.'
