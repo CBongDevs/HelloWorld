@@ -12,5 +12,6 @@ jobs:
     - uses: Ilshidur/action-discord@0.0.2
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
       with:
         args: 'The release [${{ github.event.release.tag_name }}](${{ github.event.release.html_url }}) of project ${{ github.repository }} has been released.'
