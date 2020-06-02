@@ -2,7 +2,7 @@ name: Test Actions for Discord Notifications
 
 on:
   release:
-    types: [ created ]
+    types: [ published ]
 
 jobs:
   notify:
