@@ -6,9 +6,12 @@ on:
     
 jobs:
   Discord-Action:
-  - name: Discord notification
-  env:
-    DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-  with:
-    args: 'The release [{{ EVENT_PAYLOAD.release.tag_name }}]({{ EVENT_PAYLOAD.release.url }}) of project {{ EVENT_PAYLOAD.repository.full_name }} has been released.'
-    uses: Ilshidur/action-discord@0.0.2
+    name: Create a discord notification
+    runs-on: ubuntu latest
+    steps:
+    - name: Discord notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: 'The release [{{ EVENT_PAYLOAD.release.tag_name }}]({{ EVENT_PAYLOAD.release.url }}) of project {{ EVENT_PAYLOAD.repository.full_name }} has been released.'
+        uses: Ilshidur/action-discord@0.0.2
