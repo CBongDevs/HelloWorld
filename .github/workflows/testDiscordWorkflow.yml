@@ -1,4 +1,4 @@
-name: test Actions for Discord notifications
+name: Test Actions for Discord Notifications
 
 on:
   release:
