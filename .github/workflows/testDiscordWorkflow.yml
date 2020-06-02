@@ -7,7 +7,7 @@ on:
 jobs:
   Discord-Action:
     name: Create a discord notification
-    runs-on: ubuntu latest
+    runs-on: ubuntu-latest
     steps:
     - name: Discord notification
       uses: Ilshidur/action-discord@0.0.2
