@@ -13,5 +13,5 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       with:
-        args: "{{ GITHUB_ACTION }} {{GITHUB_ACTION}}"
+        args: "{{ repository.full_name }} {{ EVENT_PAYLOAD.repository.full_name }}"
         #args: 'The release [{{ EVENT_PAYLOAD.release.tag_name }}]({{ EVENT_PAYLOAD.release.url }}) of project {{ EVENT_PAYLOAD.repository.full_name }} has been released.'
