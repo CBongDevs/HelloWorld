@@ -13,4 +13,4 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       with:
-        args: 'The release [${{ ${{ github.event.tag_name }}](${{ github.event.url }}) of project ${{ github.repository }} has been released.'
+        args: 'The release [${{ ${{ github.event.release.tag_name }}](${{ github.event.release.url }}) of project ${{ github.repository }} has been released.'
