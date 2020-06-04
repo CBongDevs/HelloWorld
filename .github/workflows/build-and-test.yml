@@ -63,7 +63,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: ${{ needs.version-bump.outputs.version }}_dist
+        name: dist-${{ needs.version-bump.outputs.version }}
         path: ./web/build
   merge-results:
     needs:
@@ -78,7 +78,7 @@ jobs:
     - name: Download dist
       uses: actions/download-artifact@v1
       with:
-        name: ${{ needs.version-bump.outputs.version }}_dist
+        name: dist-${{ needs.version-bump.outputs.version }}
         path: ./dist
     - name: Merge and Zip
       run: |
@@ -88,7 +88,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
-        name: ${{ needs.version-bump.outputs.version }}.tgz
+        name: artifact-${{ needs.version-bump.outputs.version }}.tgz
         path: artifact.tgz
 #  draft-release:
 #    needs:
@@ -126,6 +126,7 @@ jobs:
   deploy-to-heroku:
     needs:
       - merge-results
+      - version-bump
     name: Deploy to Heroku
     runs-on: ubuntu-latest
     steps:
@@ -134,7 +135,7 @@ jobs:
     - name: Download artifact.tgz
       uses: actions/download-artifact@v1
       with:
-        name: artifact.tgz
+        name: artifact-${{ needs.version-bump.outputs.version }}.tgz
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
@@ -146,7 +147,7 @@ jobs:
     - name: Deploy to Staging
       run: |
         ls
-        python deploy.py deploy --app cbongdevs-staging-helloworld artifact.tgz
+        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
