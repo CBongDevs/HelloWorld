@@ -123,3 +123,30 @@ jobs:
 #          asset_path: artifact.tgz
 #          asset_name: ${{ github.ref }}
 #          asset_content_type: application/gzip
+  deploy-to-heroku:
+    needs:
+      - merge-results
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Download artifact.tgz
+      uses: actions/download-artifact@v1
+      with:
+        name: artifact.tgz
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Deploy to Staging
+      run: |
+        ls
+        python deploy.py deploy --app cbongdevs-staging-helloworld artifact.tgz
+        python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
+      enve:
+        HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
