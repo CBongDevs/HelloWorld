@@ -64,6 +64,7 @@ jobs:
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
     - name: Discord notification
+      if: always()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
