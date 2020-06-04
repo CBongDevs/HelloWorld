@@ -148,7 +148,7 @@ jobs:
     - name: Deploy to Staging
       run: |
         ls -R
-        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
+        python deploy.py deploy --app cbongdevs-staging-helloworld artifact.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
