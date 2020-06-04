@@ -175,7 +175,6 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Deploy to Staging
       run: |
-        ls -R
         python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
       env:
