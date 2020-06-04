@@ -83,13 +83,13 @@ jobs:
     - name: Merge and Zip
       run: |
         mv ./dist ./web/build
-        touch artifact.tgz
-        tar czfv artifact.tgz --exclude=artifact.tgz --exclude=.git .
+        touch artifact-${{ needs.version-bump.outputs.version }}.tgz
+        tar czfv artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=.git .
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
       with:
-        name: artifact-${{ needs.version-bump.outputs.version }}.tgz
-        path: artifact.tgz
+        name: artifact-${{ needs.version-bump.outputs.version }}
+        path: artifact-${{ needs.version-bump.outputs.version }}.tgz
 #  draft-release:
 #    needs:
 #      - merge-results
@@ -135,7 +135,7 @@ jobs:
     - name: Download artifact.tgz
       uses: actions/download-artifact@v2
       with:
-        name: artifact-${{ needs.version-bump.outputs.version }}.tgz
+        name: artifact-${{ needs.version-bump.outputs.version }}
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
@@ -147,7 +147,7 @@ jobs:
     - name: Deploy to Staging
       run: |
         ls -R
-        python deploy.py deploy --app cbongdevs-staging-helloworld artifact.tgz
+        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
