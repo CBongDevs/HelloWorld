@@ -148,5 +148,5 @@ jobs:
         ls
         python deploy.py deploy --app cbongdevs-staging-helloworld artifact.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
-      enve:
+      env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
