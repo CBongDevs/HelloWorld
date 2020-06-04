@@ -7,6 +7,15 @@ on:
     branches: [ master, develop ]
 
 jobs:
+  notify-build:
+    name: Notify In Discord
+    runs-on: ubuntu-latest
+    steps:
+    - name: Discord notification (commit)
+      if: always()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@0.1.0
   version-bump:
     name: Version Bump
     runs-on: ubuntu-latest
@@ -45,29 +54,24 @@ jobs:
     - name: Test with pytest
       run: |
         pytestcommandnotfoundtestinghithere
-    - name: Push results to discord
+    - name: Push results to discord (sucess)
       if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: DoesThisEvenWork
+        DISCORD_USERNAME: BuildBot
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has succeeded.'
-    - name: Push results to discord
+    - name: Push results to discord (fail)
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: DoesThisEvenWork
+        DISCORD_USERNAME: BuildBot
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
-    - name: Discord notification
-      if: always()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@0.1.0
   build-web:
     needs:
       - version-bump
@@ -88,6 +92,24 @@ jobs:
       with:
         name: dist-${{ needs.version-bump.outputs.version }}
         path: ./web/build
+    - name: Push results to discord (sucess)
+      if: success()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: BuildBot
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has succeeded.'
+    - name: Push results to discord (fail)
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: BuildBot
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
   merge-results:
     needs:
       - version-bump
