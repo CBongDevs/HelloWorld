@@ -50,7 +50,7 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
-        DISCORD_USERNAME: Github Actions
+        DISCORD_USERNAME: DoesThisEvenWork
       uses: Ilshidur/action-discord@0.0.2
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has succeeded.'
@@ -59,7 +59,7 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
-        DISCORD_USERNAME: Github Actions
+        DISCORD_USERNAME: DoesThisEvenWork
       uses: Ilshidur/action-discord@0.0.2
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
@@ -67,7 +67,7 @@ jobs:
       if: always()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
+      uses: Ilshidur/action-discord@0.0.2
   build-web:
     needs:
       - version-bump
