@@ -63,6 +63,10 @@ jobs:
       uses: Ilshidur/action-discord@0.0.2
       with:
         args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
+    - name: Discord notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
   build-web:
     needs:
       - version-bump
