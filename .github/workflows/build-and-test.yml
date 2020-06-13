@@ -22,9 +22,9 @@ jobs:
     outputs:
       version: ${{ steps.version-bump.outputs.version }}
     steps:
-      #- uses: actions/checkout@v2
-        #with:
-          #fetch-depth: 0
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Bump Version
         uses: nobrayner/version-bumper@v1
         id: version-bump
