@@ -27,6 +27,7 @@ jobs:
         uses: nobrayner/version-bumper@v1
         id: version-bump
         with:
+          github-token: ${{ secrets.github_token }}
           bump: 'preminor'
           prerelease-text: 'dev'
           build-number: ${{ github.run_number }}
