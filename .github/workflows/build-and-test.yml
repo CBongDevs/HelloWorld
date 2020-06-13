@@ -20,15 +20,23 @@ jobs:
     name: Version Bump
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      version: ${{ steps.version-bump.outputs.version }}
     steps:
       - uses: actions/checkout@v2
-      - name: Get Current Version
-        id: version
+      - name: Bump Version
+        uses: nobrayner/version-bumper@v1
+        id: version-bump
+      - name: Commit new version
+        if: ${{ steps.version-bump.outputs.new-version }}
         run: |
-          sha=${{ github.sha }}
-          shortSHA=${sha::7}
-          echo "::set-output name=version::0.0.0-dev.$shortSHA+${{ github.run_number }}"
+          echo ${{ steps.version-bump.outputs.version }} > version.info
+          cd web && npm version --git-tag-version=false ${{ steps.version-bump.outputs.version }}
+          cd ../api && echo ${{ steps.version-bump.outputs.version }} > VERSION
+          git config user.email version-bumper@github.com
+          git config user.name ${{ github.actor }}
+          git add .
+          git commit -m "Bump version to ${{ steps.version-bump.outputs.version }}"
+          git push
   build-api:
     needs:
       - version-bump
