@@ -26,6 +26,10 @@ jobs:
       - name: Bump Version
         uses: nobrayner/version-bumper@v1
         id: version-bump
+        with:
+          bump: 'preminor'
+          prerelease-text: 'dev'
+          build-number: ${{ github.run_number }}
       - name: Commit new version
         if: ${{ steps.version-bump.outputs.new-version }}
         run: |
