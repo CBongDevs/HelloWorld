@@ -36,6 +36,7 @@ jobs:
           echo ${{ steps.version-bump.outputs.version }} > version.info
           cd web && npm version --git-tag-version=false ${{ steps.version-bump.outputs.version }}
           cd ../api && echo ${{ steps.version-bump.outputs.version }} > VERSION
+          cd ..
           git config user.email version-bumper@github.com
           git config user.name ${{ github.actor }}
           git add .
