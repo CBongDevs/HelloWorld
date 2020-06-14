@@ -33,7 +33,7 @@ jobs:
           bump: 'preminor'
           prerelease-text: 'dev'
       - name: Commit new version
-        if: ${{ steps.version-bump.outputs.new-version }}
+        if: ${{ steps.version-bump.outputs.new-version }} == true
         run: |
           echo ${{ steps.version-bump.outputs.version }} > version.info
           cd web && npm version --git-tag-version=false --allow-same-version ${{ steps.version-bump.outputs.version }}
