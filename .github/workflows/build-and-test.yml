@@ -25,20 +25,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-#trigger ci
       - name: Bump Version
-        uses: nobrayner/version-bumper@v1
+        uses: nobrayner/version-bumper@master # Because this is still being tested!
         id: version-bump
         with:
           github-token: ${{ secrets.github_token }}
           bump: 'preminor'
           prerelease-text: 'dev'
-          build-number: ${{ github.run_number }}
       - name: Commit new version
-        if: ${{ steps.version-bump.outputs.new-version }}
+        if: ${{ steps.version-bump.outputs.new-version == 'true' || steps.version-bump.outputs.new-version == true }}
         run: |
+          echo "Version Bump new-version: ${{ steps.version-bump.outputs.new-version }}"
           echo ${{ steps.version-bump.outputs.version }} > version.info
-          cd web && npm version --git-tag-version=false ${{ steps.version-bump.outputs.version }}
+          cd web && npm version --git-tag-version=false --allow-same-version ${{ steps.version-bump.outputs.version }}
           cd ../api && echo ${{ steps.version-bump.outputs.version }} > VERSION
           cd ..
           git config user.email version-bumper@github.com
@@ -175,7 +174,6 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Deploy to Staging
       run: |
-        ls -R
         python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
         python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
       env:
@@ -194,7 +192,7 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         DISCORD_USERNAME: Deploy Failed
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsRedTick.png
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
         args: 'Deployment for [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
