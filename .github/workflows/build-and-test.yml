@@ -33,7 +33,7 @@ jobs:
           bump: 'preminor'
           prerelease-text: 'dev'
       - name: Commit new version
-        if: ${{ steps.version-bump.outputs.new-version }} == 'true'
+        if: ${{ steps.version-bump.outputs.new-version == 'true' || steps.version-bump.outputs.new-version == true }}
         run: |
           echo "Version Bump new-version: ${{ steps.version-bump.outputs.new-version }}"
           echo ${{ steps.version-bump.outputs.version }} > version.info
