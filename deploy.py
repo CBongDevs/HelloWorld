@@ -100,8 +100,7 @@ def get_git_revision(base_path):
 
 def request_source_blob_endpoint(app):
     print('Requesting source blob endpoints...')
-    source_blob = requests.post(sources_api(app),
-                                headers=headers).json()['source_blob']
+    source_blob = requests.post(sources_api(app), headers=headers).json()['source_blob']
     get_url = source_blob['get_url']
     put_url = source_blob['put_url']
     return (get_url, put_url)
