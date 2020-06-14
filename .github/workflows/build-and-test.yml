@@ -25,9 +25,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-#trigger ci
       - name: Bump Version
-        uses: nobrayner/version-bumper@v1
+        uses: nobrayner/version-bumper@master # Because this is still being tested!
         id: version-bump
         with:
           github-token: ${{ secrets.github_token }}
