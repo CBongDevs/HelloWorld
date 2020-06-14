@@ -32,7 +32,6 @@ jobs:
           github-token: ${{ secrets.github_token }}
           bump: 'preminor'
           prerelease-text: 'dev'
-          build-number: ${{ github.run_number }}
       - name: Commit new version
         if: ${{ steps.version-bump.outputs.new-version }}
         run: |
