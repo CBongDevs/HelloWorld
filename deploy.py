@@ -5,11 +5,17 @@ import json
 import requests
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
-from sys import exit
+from sys import exit, stderr
+from os import getenv
+
+HEROKU_API_TOKEN = getenv("HEROKU_API_TOKEN")
+if HEROKU_API_TOKEN is None:
+    print('HEROKU_API_TOKEN was not provided. Make sure this is set in an environmental variable (or secret on Github)!', file=stderr)
+    exit(-1)
 
 headers = {
     'Accept': 'application/vnd.heroku+json; version=3',
-    'Authorization': 'Bearer 3b6d7e1c-8385-4f41-9138-4146a58dcfdc'
+    'Authorization': f'Bearer {getenv("HEROKE_APh_TOKEN")}'
 }
 
 
@@ -100,8 +106,7 @@ def get_git_revision(base_path):
 
 def request_source_blob_endpoint(app):
     print('Requesting source blob endpoints...')
-    source_blob = requests.post(sources_api(app),
-                                headers=headers).json()['source_blob']
+    source_blob = requests.post(sources_api(app), headers=headers).json()['source_blob']
     get_url = source_blob['get_url']
     put_url = source_blob['put_url']
     return (get_url, put_url)
