@@ -111,8 +111,4 @@ jobs:
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
-<<<<<<< HEAD
         args: 'Deployment for [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
-=======
-        args: 'Deployment for [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
->>>>>>> 1b501f7932ee5bbd999004e31fb8c65ff988d14d
