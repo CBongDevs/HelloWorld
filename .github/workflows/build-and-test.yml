@@ -103,11 +103,3 @@ jobs:
       with:
         args: '${{ github.job }} succeeded for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
     - name: Push results to discord (fail)
-      if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Failed
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '${{ github.job }} failed for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
