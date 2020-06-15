@@ -63,7 +63,6 @@ jobs:
       working-directory: ./web
     - name: Merge and Zip
       run: |
-        mv ./dist ./web/build
         touch artifact-${{ needs.version-bump.outputs.version }}.tgz
         tar czfv artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=.git .
     - name: Upload Artifact
