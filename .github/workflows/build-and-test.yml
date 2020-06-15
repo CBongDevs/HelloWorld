@@ -35,7 +35,7 @@ jobs:
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
-        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has succeeded.'
+        args: '${{ github.job }} succeeded for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
     - name: Push results to discord (fail)
       if: failure()
       env:
@@ -44,7 +44,7 @@ jobs:
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
-        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
+        args: '${{ github.job }} failed for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
   web-tests:
     name: Web - Tests
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
-        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has succeeded.'
+        args: '${{ github.job }} succeeded for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
     - name: Push results to discord (fail)
       if: failure()
       env:
@@ -75,13 +75,17 @@ jobs:
         DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
       uses: Ilshidur/action-discord@0.1.0
       with:
-        args: 'The build [${{ github.job }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) of project ${{ github.repository }} has failed.'
+        args: '${{ github.job }} failed for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x 
     - name: Build Web
       run: npm run build --if-present
       working-directory: ./web
@@ -89,3 +93,21 @@ jobs:
       run: |
         touch build-artifact.tgz
         tar czfv build-artifact.tgz --exclude=build-artifact.tgz --exclude=.git .
+    - name: Push results to discord (sucess)
+      if: success()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: Build Succeeded
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: '${{ github.job }} succeeded for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
+    - name: Push results to discord (fail)
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: Build Failed
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: '${{ github.job }} failed for [PR#${{ github.event.number }}: ${{ github.event.title }}](${{ github.event.html_url }}) on ${{ github.repository }}'
