@@ -15,7 +15,7 @@ if HEROKU_API_TOKEN is None:
 
 headers = {
     'Accept': 'application/vnd.heroku+json; version=3',
-    'Authorization': f'Bearer {getenv("HEROKE_APh_TOKEN")}'
+    'Authorization': f'Bearer {HEROKU_API_TOKEN}'
 }
 
 
