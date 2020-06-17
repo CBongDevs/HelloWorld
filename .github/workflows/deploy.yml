@@ -1,0 +1,117 @@
+name: Deploy
+
+on:
+  push:
+    # Needs expanding later
+    branches: [ master, develop ]
+
+jobs:
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    steps:
+    - name: Discord notification (commit)
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@0.1.0
+  version-bump:
+    name: Version Bump
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version-bump.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Bump Version
+        uses: nobrayner/version-bumper@master # Because this is still being tested!
+        id: version-bump
+        with:
+          github-token: ${{ secrets.github_token }}
+          bump: 'preminor'
+          prerelease-text: 'dev'
+      - name: Commit new version
+        if: ${{ steps.version-bump.outputs.new-version == 'true' || steps.version-bump.outputs.new-version == true }}
+        run: |
+          echo "Version Bump new-version: ${{ steps.version-bump.outputs.new-version }}"
+          echo ${{ steps.version-bump.outputs.version }} > version.info
+          cd web && npm version --git-tag-version=false --allow-same-version ${{ steps.version-bump.outputs.version }}
+          cd ../api && echo ${{ steps.version-bump.outputs.version }} > VERSION
+          cd ..
+          git config user.email version-bumper@github.com
+          git config user.name ${{ github.actor }}
+          git add .
+          git commit -m "Bump version to ${{ steps.version-bump.outputs.version }}"
+          git push
+  build:
+    name: Build
+    needs:
+      - version-bump
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x 
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./web
+    - name: Build Web
+      run: npm run build --if-present
+      working-directory: ./web
+    - name: Merge and Zip
+      run: |
+        touch artifact-${{ needs.version-bump.outputs.version }}.tgz
+        tar czfv artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=.git .
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: artifact-${{ needs.version-bump.outputs.version }}
+        path: artifact-${{ needs.version-bump.outputs.version }}.tgz
+  deploy:
+    needs:
+      - build
+      - version-bump
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact-${{ needs.version-bump.outputs.version }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install click requests
+    - name: Deploy to Heroku (Staging)
+      run: |
+        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
+        python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
+      env:
+        HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+    - name: Push results to discord (sucess)
+      if: success()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: Deploy Succeeded
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: 'Deployment of [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.repository }} succeeded'
+    - name: Push results to discord (fail)
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: Deploy Failed
+        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
+      uses: Ilshidur/action-discord@0.1.0
+      with:
+        args: 'Deployment of [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.repository }} failed'
