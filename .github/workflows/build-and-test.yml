@@ -36,8 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run tests
       run: |
-        pytest --cov=api
-        coverage report --fail-under=60
+        pytest --cov=api --cov-fail-under=60
     - name: Push results to discord (sucess)
       if: success()
       env:
