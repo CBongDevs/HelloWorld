@@ -14,6 +14,8 @@ from flask import Blueprint
 
 controller = Blueprint('ping', __name__)
 
+def get_current_time():
+    return datetime.now()
 
 @controller.route('/ping')
 def ping():
@@ -25,7 +27,7 @@ def ping():
         </head>
         <body>
             <h1>Ping</h1
-            <p>Current Time: {datetime.now()}</p>
+            <p>Current Time: {get_current_time()}</p>
         </body>
     </html>
     """
