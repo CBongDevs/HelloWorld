@@ -83,6 +83,7 @@ jobs:
       - api-tests
       - web-tests
       - build
+    if: ${{ always() }}
     
     steps:
       - name: Notify
