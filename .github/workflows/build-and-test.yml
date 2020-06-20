@@ -3,128 +3,87 @@ name: Build and Test
 on: [ pull_request ]
 
 jobs:
-  notify:
-    name: Discord Notification
-    runs-on: ubuntu-latest
-    steps:
-    - name: Discord notification (pull request)
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@0.1.0
   api-tests:
     name: Api Tests
-    needs:
-      - notify
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+  
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Run linter
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
     - name: Run tests
       run: |
         pytest --cov=api --cov-fail-under=60
-    - name: Push results to discord (sucess)
-      if: success()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Succeeded
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Api Tests](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) succeeded for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
-    - name: Push results to discord (fail)
-      if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Failed
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Api Tests](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
+
   web-tests:
     name: Web Tests
-    needs:
-      - notify
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
         node-version: 10.x
+
     - name: Run tests
       run: npm ci
       working-directory: ./web
-    - name: Push results to discord (sucess)
-      if: success()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Succeeded
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Web Tests](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) succeeded for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
-    - name: Push results to discord (fail)
-      if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Failed
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Web Tests](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
+
   build:
     name: Build
-    needs:
-      - notify
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 10.x 
+        node-version: 10.x
+
     - name: Install dependencies
       run: npm install
       working-directory: ./web
+
     - name: Build Web
       run: npm run build --if-present
       working-directory: ./web
+
     - name: Merge and Zip
       run: |
         touch build-artifact.tgz
         tar czfv build-artifact.tgz --exclude=build-artifact.tgz --exclude=.git .
-    - name: Push results to discord (sucess)
-      if: success()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Succeeded
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Build](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) succeeded for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
-    - name: Push results to discord (fail)
-      if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Build Failed
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717523006964105246/GithubActionsRedTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: '[Build](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed for [PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) on ${{ github.repository }}'
+
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify
+        uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ secrets.github_token }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: '[PR#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})'
