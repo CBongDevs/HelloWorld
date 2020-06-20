@@ -79,6 +79,10 @@ jobs:
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
+    needs:
+      - api-tests
+      - web-tests
+      - build
     
     steps:
       - name: Notify
