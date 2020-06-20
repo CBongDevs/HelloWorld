@@ -114,6 +114,7 @@ jobs:
       - version-bump
       - build
       - deploy
+    if: ${{ always() }}
     
     steps:
       - name: Notify
