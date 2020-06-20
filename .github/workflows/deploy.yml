@@ -107,16 +107,6 @@ jobs:
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
 
-    - name: Push results to discord (sucess)
-      if: success()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        DISCORD_USERNAME: Deploy Succeeded
-        DISCORD_AVATAR: https://cdn.discordapp.com/attachments/717307128028594186/717522733965115543/GithubActionsGreenTick.png
-      uses: Ilshidur/action-discord@0.1.0
-      with:
-        args: 'Deployment of [${{ needs.version-bump.outputs.version }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.repository }} succeeded'
-
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
@@ -131,3 +121,4 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: ${{ needs.version-bump.outputs.version }}
