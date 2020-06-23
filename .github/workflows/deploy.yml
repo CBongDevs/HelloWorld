@@ -90,22 +90,12 @@ jobs:
       with:
         name: artifact-${{ needs.version-bump.outputs.version }}
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install click requests
-
     - name: Deploy to Heroku (Staging)
-      run: |
-        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
-        python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
-      env:
-        HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+      uses: mrwerdo/DeployToHeroku@v0.0.5
+      with:
+        artifact-path: artifact-${{ needs.version-bump.outputs.version }}.tgz
+        app: cbongdevs-staging-helloworld
+        token: ${{ secrets.HEROKU_API_TOKEN }}
 
   notify:
     name: Discord Notification
