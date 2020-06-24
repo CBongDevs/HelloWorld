@@ -3,7 +3,10 @@ name: Deploy
 on:
   push:
     # Needs expanding later
-    branches: [ master, develop ]
+    branches: [ master, develop, dpat-8-deploy-to-heroku ]
+  pull_request:
+    branches: [ dpat-8-deploy-to-heroku ]
+    types: [assigned, unassigned, labeled, unlabeled, opened, edited, closed, reopened, synchronize, ready_for_review, locked, unlocked, review_requested, review_request_removed]
 
 jobs:
   version-bump:
@@ -91,11 +94,14 @@ jobs:
         name: artifact-${{ needs.version-bump.outputs.version }}
 
     - name: Deploy to Heroku (Staging)
-      uses: mrwerdo/DeployToHeroku@v0.0.5
+      uses: mrwerdo/DeployToHeroku@v0.0.7
       with:
-        artifact-path: artifact-${{ needs.version-bump.outputs.version }}.tgz
-        app: cbongdevs-staging-helloworld
+        artifact: artifact-${{ needs.version-bump.outputs.version }}.tgz
         token: ${{ secrets.HEROKU_API_TOKEN }}
+        environments: |
+          /dpat/ -> cbongdevs-staging-helloworld
+          /develop/ -> cbongdevs-staging-helloworld
+          /master/ -> cbong-devs-helloworld
 
   notify:
     name: Discord Notification
