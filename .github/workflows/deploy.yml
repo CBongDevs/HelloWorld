@@ -3,7 +3,10 @@ name: Deploy
 on:
   push:
     # Needs expanding later
-    branches: [ master, develop ]
+    branches: [ master, develop, dpat-8-deploy-to-heroku ]
+  pull_request:
+    branches: [ dpat-8-deploy-to-heroku ]
+    types: [assigned, unassigned, labeled, unlabeled, opened, edited, closed, reopened, synchronize, ready_for_review, locked, unlocked, review_requested, review_request_removed]
 
 jobs:
   version-bump:
@@ -65,8 +68,14 @@ jobs:
 
     - name: Merge and Zip
       run: |
-        touch artifact-${{ needs.version-bump.outputs.version }}.tgz
-        tar czfv artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=.git .
+       tar cfv artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=.git \
+                --exclude=web \
+                .
+        tar rfv artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=web/node_modules \
+                web
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
@@ -90,22 +99,15 @@ jobs:
       with:
         name: artifact-${{ needs.version-bump.outputs.version }}
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install click requests
-
     - name: Deploy to Heroku (Staging)
-      run: |
-        python deploy.py deploy --app cbongdevs-staging-helloworld artifact-${{ needs.version-bump.outputs.version }}.tgz
-        python deploy.py build-output --app cbongdevs-staging-helloworld -n 0
-      env:
-        HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+      uses: mrwerdo/DeployToHeroku@v0.0.7
+      with:
+        artifact: artifact-${{ needs.version-bump.outputs.version }}.tgz
+        token: ${{ secrets.HEROKU_API_TOKEN }}
+        environments: |
+          /dpat/ -> cbongdevs-staging-helloworld
+          /develop/ -> cbongdevs-staging-helloworld
+          /master/ -> cbongdevs-prod-helloworld
 
   notify:
     name: Discord Notification
