@@ -68,8 +68,14 @@ jobs:
 
     - name: Merge and Zip
       run: |
-        touch artifact-${{ needs.version-bump.outputs.version }}.tgz
-        tar czfv artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz --exclude=.git .
+       tar cfv artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=.git \
+                --exclude=web \
+                .
+        tar rfv artifact-${{ needs.version-bump.outputs.version }}.tgz \
+                --exclude=web/node_modules \
+                web
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v1
@@ -101,7 +107,7 @@ jobs:
         environments: |
           /dpat/ -> cbongdevs-staging-helloworld
           /develop/ -> cbongdevs-staging-helloworld
-          /master/ -> cbong-devs-helloworld
+          /master/ -> cbongdevs-prod-helloworld
 
   notify:
     name: Discord Notification
