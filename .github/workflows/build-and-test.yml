@@ -41,14 +41,18 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.x
-
-    - name: Run tests
-      run: npm ci
+    - name: Install Dependencies
+      run: npm install
       working-directory: ./web
+
+    - name: Unit Tests
+      run: npm run test --watchAll=false
+
+    - name: E2E Tests
+      uses: cypress-io/github-action@v1
+      with:
+        start: npm run start
+        wait-on: 'http://localhost:3000'
 
   build:
     name: Build
