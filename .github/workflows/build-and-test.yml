@@ -52,7 +52,7 @@ jobs:
     - name: E2E Tests
       uses: cypress-io/github-action@v1
       with:
-        project: ./web
+        working-directory: ./web
         start: npm run start
         wait-on: 'http://localhost:3000'
 
