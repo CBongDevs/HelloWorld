@@ -47,10 +47,12 @@ jobs:
 
     - name: Unit Tests
       run: npm run test --watchAll=false
+      working-directory: ./web
 
     - name: E2E Tests
       uses: cypress-io/github-action@v1
       with:
+        project: ./web
         start: npm run start
         wait-on: 'http://localhost:3000'
 
