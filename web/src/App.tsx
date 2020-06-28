@@ -26,6 +26,7 @@ class App extends React.Component<{}, AppState> {
     <div onClick={this.buttonClick.bind(this)} className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <p>Time:</p>
         <p key={Date.now()} id='status'>
           {this.state.status}
         </p>
